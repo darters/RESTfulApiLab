@@ -3,9 +3,12 @@ package com.example.demo.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.demo.config.PaginationConfig;
 import com.example.demo.dto.request.UserCreateRequest;
 import com.example.demo.dto.request.UserUpdateRequest;
 import com.example.demo.dto.response.UserCreateResponse;
@@ -23,8 +26,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponse> getAll() {
-        return userRepository.findAll().stream().map(user -> new UserResponse(user.getEmail(), user.getName())).toList();
+    public Page<UserResponse> getUsers(int page, int size, String sortBy) {
+        Pageable pageRequest = PaginationConfig.createPageRequest(page, size, sortBy);
+        Page<UserResponse> users = userRepository.findAll(pageRequest).map(user -> new UserResponse(user.getEmail(), user.getName()));
+        return users;
     }
     @Override
     public UserResponse get(long id) {
