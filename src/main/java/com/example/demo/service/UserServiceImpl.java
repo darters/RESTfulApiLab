@@ -18,7 +18,6 @@ import com.example.demo.entity.User;
 import com.example.demo.repository.UserRepository;
 
 @Service
-@Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     public UserServiceImpl(UserRepository userRepository) {
@@ -37,6 +36,8 @@ public class UserServiceImpl implements UserService {
         User user = optionalUser.orElseThrow(() -> new RuntimeException("User not found"));
         return new UserResponse(user.getEmail(), user.getName());
     }
+
+    @Transactional
     @Override
     public UserCreateResponse save(UserCreateRequest userCreateRequest) {
         if (userRepository.existsByEmail(userCreateRequest.email())) {
@@ -46,6 +47,7 @@ public class UserServiceImpl implements UserService {
         User createdUser = userRepository.save(user);
         return new UserCreateResponse(createdUser.getEmail(), createdUser.getName());
     }
+    @Transactional
     @Override
     public UserUpdateResponse update(long id, UserUpdateRequest userUpdateRequest) {
         User user = userRepository.findById(id)
